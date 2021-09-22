@@ -1,0 +1,137 @@
+Host *
+  ServerAliveInterval 60
+  ForwardAgent yes
+  KexAlgorithms +diffie-hellman-group1-sha1
+
+
+Host cpd4-app cpd4_app
+  HostName 172.25.38.6
+      User arnau.rebassa
+
+Host cpd4-sip cpd4_sip
+  HostName 172.25.38.7
+      User dani.castanos
+
+Host cpd4-db cpd4_db
+  HostName 172.25.38.70
+      User dani.castanos
+
+Host cpd4-pre-app cpd4_pre_app
+  HostName 172.25.100.166 
+      User arnau.rebassa
+       
+Host api-dev
+  HostName api-dev.phemium.com
+      User arnau.rebassa
+
+Host api-pre
+  HostName api-prerelease.phemium.com
+      User arnau.rebassa
+       
+Host api-integra
+  HostName api-integra.phemium.com
+      User arnau.rebassa
+
+
+
+Host luxmed-pre-app1
+  HostName 10.130.41.129 
+      User arnaurebassa
+
+Host luxmed-pre-app2
+  HostName 10.130.41.128 
+      User arnaurebassa
+
+Host luxmed-pre-node
+  HostName 10.130.41.127
+      User arnaurebassa
+
+Host luxmed-prod-app1
+  HostName 10.128.21.60
+      User arnaurebassa
+
+Host luxmed-prod-app2
+  HostName 10.128.21.61
+      User arnaurebassa
+
+Host luxmed-prod-node
+  HostName 10.128.21.62
+      User arnaurebassa
+
+Host luxmed-prod-sip
+  HostName 10.128.24.171
+      User arnaurebassa
+      
+Host luxmed-prod-db
+  HostName 10.128.61.185
+      User arnaurebassa
+
+
+
+Host mok-pre-app
+  HostName 10.15.23.200
+      User soporte
+
+Host mok-pre-app-back 
+  HostName 1.2.11.200
+ ProxyJump mok-pre-app
+      User soporte
+
+Host mok-pre-db
+  HostName 2.2.2.3
+      User soporte
+
+Host mok-pre-sip
+  HostName 10.15.23.201
+      User soporte
+
+Host mok-pro-app
+  HostName 10.15.23.23
+      User soporte
+
+Host mok-pro-app-back
+  HostName 1.2.11.23
+ ProxyJump mok-pro-app
+      User soporte
+
+Host mok-pro-db
+  HostName 2.2.2.2
+      User soporte
+
+Host mok-pro-sip
+  HostName 10.15.23.24
+      User soporte
+
+Host mokco-pre-app
+  HostName 10.30.14.91
+      User soporte
+
+Host mokco-pre-app-back
+  HostName 10.30.14.93
+      User soporte
+
+Host mokco-pre-sip
+  HostName 10.30.14.95
+      User soporte
+
+Host mokco-pre-db
+  HostName 10.30.14.97
+ ProxyJump mokco-pre-app
+      User soporte
+
+Host mokco-pro-app
+  HostName 10.30.13.61
+      User soporte
+
+Host mokco-pro-app-back 
+  HostName 1.2.11.23
+ ProxyJump mokco-pro-app
+      User soporte
+
+Host mokco-pro-sip
+  HostName 10.30.13.65
+      User soporte
+
+Host mokco-pro-db
+  HostName 10.30.13.67
+      User soporte

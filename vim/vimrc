@@ -1,0 +1,346 @@
+"====[ Preamble ]=============================================================
+
+set nocompatible           "Use Vim defaults instead of 100% vi compatibility
+
+"filetype off is commented as it clashes with svn command line tool
+"filetype off               "Detect the type of file off
+
+
+call pathogen#infect()
+syntax on
+filetype plugin indent on
+
+
+
+"====[ Basic options ]========================================================
+"set mouse=a
+
+set modelines=0
+
+set scrolloff=5                "There are always at least five lines visible
+                               "above the cursor, and five lines visible below
+                               "the cursor
+set scrolljump=5               "Lines to scroll when cursor leaves screen
+
+set backspace=indent,eol,start "BS past autoindents, line boundaries,
+                               "and even the start of insertion
+
+set showmatch                  "This setting will cause the cursor to very briefly
+                               "jump to a brace/parenthese/bracket's "match"
+                               " whenever you type a closing or opening
+                               " brace/parenthese/bracket.
+
+
+set number                     "Set hybrid line number mode
+set relativenumber             "The current line is displayed with the absolute number, the rest as relative.
+
+set viminfo=h,f1,'1000,"1000,<500,s100,/10000,:10000,%    "h       : Disable 'hlsearch' highlighting when starting
+                                                    "f1      : The globals marks (A-Z and 0-9) are stored
+                                                    "'1000   : Marks (a-z) will be remembered for up to 1000 edited files
+                                                    ""1000   : Will save up to 1000 lines for each register
+                                                    "<500    : How many lines are saved for each of the registers
+                                                    "s100    : Maximum size of an item in Kbyte
+                                                    "/10000  : How many lines to save from the search history
+                                                    ":10000  : How many lines to save from the command line history
+                                                    "%       : saves and restores to the buffer list
+
+set matchpairs+=<:>,[:],{:}    "Match angle brackets too
+
+
+set wildmenu                   "Command-line completion operates in an enhanced mode
+
+set wildmode=list:longest,full "comand <Tab> completion. Show list of completions
+                               "and complete as much as possible,
+                               "then iterate full completions
+
+set history=10000              "Have 10000 lines of command-line  (etc) history
+
+set showcmd                    "Display an incomplete command in the lower right
+                               "corner of the Vim window
+
+set showmode                   "Display the current mode
+
+set iskeyword+=_,$,@,%,#,-     "None of these should be word dividers, no make them not be
+
+
+set lazyredraw                 "Do not redraw while running macros (much faster)
+
+"Prevent Vim from clobbering the scrollback buffer. 
+"See http://www.shallowsky.com/linux/noaltscreen.html
+"set t_ti= t_te=
+
+
+
+"====[ Files/Backups/Undo ]========================================================
+
+"set backup                                "Make backup file
+
+"set backupdir=./.backup,~/.backup,.,/tmp  "Where to put backup file (don't forget to make a backup directory)
+
+"Persistent undo
+"let vimDir = '$HOME/.vim'
+"let &runtimepath.=','.vimDir
+"" Keep undo history across sessions by storing it in a file
+"if has('persistent_undo')
+"    let myUndoDir = expand(vimDir . '/undodir')
+"    " Create dirs
+"    call system('mkdir -p ' . vimDir)
+"    call system('mkdir -p' . myUndoDir)
+"    let &undodir = myUndoDir
+"    set undofile
+"    set undodir=$HOME/.vim/undo
+"    set undolevels=10000
+"    set undoreload=10000
+"endif
+
+
+set undofile
+set undodir=$HOME/.vim/undodir
+set undolevels=10000
+set undoreload=10000
+
+
+" Don't write backup file if vim is being called by "crontab -e"
+au BufWrite /private/tmp/crontab.* set nowritebackup
+
+" Don't write backup file if vim is being called by "chpass"
+au BufWrite /private/etc/pw.* set nowritebackup
+
+
+
+"====[ Invisible chars settings ]=============================================
+set list                       "highligth whitespaces
+                               "see :h listchars for more help
+set listchars=tab:>>,trail:.,extends:#,nbsp:.  "tab chars are displayed as >>
+                                "Trailing spaces are dispalyed as .
+                                "Display a # at the end of lines to mark lines
+                                "that extend off-screen
+
+" Call the strip trailing whitespace function as a command
+command! StripTrailingWhitespaces call s:StripTrailingWhitespaces()
+
+" A function to strip trailing whitespace and clean up afterwards so
+" that the search history remains intact and cursor does not move.
+" Taken from: http://vimcasts.org/episodes/tidying-whitespace
+function! s:StripTrailingWhitespaces()
+" Preparation: save last search, and cursor position.
+    let _s=@/
+    let l = line(".")
+    let c = col(".")
+" Do the business:
+    %s/\s\+$//e
+" Clean up: restore previous search history, and cursor position
+    let @/=_s
+    call cursor(l, c)
+endfunction
+
+nnoremap <F4> :StripTrailingWhitespaces<CR>
+"nnoremap <leader>W :%s/\s\+$//<cr>:let @/=''<CR>
+"
+"Remove all trailing whitespace by pressing F4
+"nnoremap <F4> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar><CR>
+
+
+
+"====[ Search settings ]======================================================
+set incsearch                 "Lookahead as search pattern specified
+set ignorecase                "Ignore case in all searches...
+set smartcase                 "...unless uppercase letters used
+"set hlsearch                  "Highlight all search matches
+
+
+
+"====[ Syntax highlighing ]===================================================
+syntax on       "Turn on syntax highlighing
+
+
+
+"====[ Make the 81st column stand out ]=======================================
+highlight ColorColumn ctermfg=208 ctermbg=Black
+
+function! MarkMargin (on)
+    if exists('b:MarkMargin')
+        try
+            call matchdelete(b:MarkMargin)
+        catch /./
+        endtry
+        unlet b:MarkMargin
+    endif
+    if a:on
+        let b:MarkMargin = matchadd('ColorColumn', '\%81v\s*\S', 100)
+    endif
+endfunction
+
+augroup MarkMargin
+    autocmd!
+    autocmd  BufEnter  *       :call MarkMargin(1)
+    autocmd  BufEnter  *.vp*   :call MarkMargin(0)
+augroup END
+
+
+
+"====[ Tab handling ]=========================================================
+
+set tabstop=2     "Indentation levels every 2 columns
+set expandtab     "Convert all tabs that are typed into spaces
+set shiftwidth=2  "Indent/outdent by 2 columns
+set shiftround    "Always indent/outdent to nearest tab stop
+set smarttab      "Use shiftwidths at left margin, tabstops everywhere else
+set softtabstop=2 "When hitting tab or backspace, how many spaces should a tab be
+
+
+"====[ Status line ]==========================================================
+
+"This setting ensures that each window contains a statusline that displays the current cursor position.
+set ruler            "Show cursor location info on status line
+set rulerformat=%30(%=\:b%n%y%m%r%w\ %l,%c%V\ %P%) " a ruler on steroids
+
+set laststatus=2              "Show the statusline in all windows
+set statusline=%F             "full path to file in the buffer
+set statusline+=%m            "rodified flag in square brackets
+set statusline+=%r            "readonly flag in square brackets
+set statusline+=%h            "help flag in square brackets
+set statusline+=%w            "preview flag in square brackets
+set statusline+=[%L]          "number of lines
+set statusline+=[%{&ff}]      "current fileformat
+set statusline+=%y            "current syntax in square brackets
+set statusline+=[%p%%]        "current % into file
+set statusline+=[%04l,%04v]                               "current line, current column
+set statusline+=%{\"[\".(&fenc==\"\"?&enc:&fenc).\"]\\"} "current file encoding
+set statusline+=[%{&spelllang}]                           "spell language
+
+
+"====[ Key (re)Mappings ]====================================================
+let mapleader=","            "Set the mapleader key from '\' to ','
+let g:mapleader=","
+
+"Remap jj to <ESC>
+inoremap jj <ESC>
+
+" Make j/k move to next visual line instead of physical line
+" http://yubinkim.com/?p=6
+nnoremap k gk
+nnoremap j gj
+nnoremap gk k
+nnoremap gj j
+
+" reselect visual block after indent/outdent
+vnoremap < <gv
+vnoremap > >gv
+
+" Arrow keys are unacceptable
+map <Left> :echo "Arrow keys are not accepted!"<cr>
+map <Right> :echo "Arrow keys are not accepted!"<cr>
+map <Up> :echo "Arrow keys are not accepted!"<cr>
+map <Down> :echo "Arrow keys are not accepted!"<cr>
+
+" Easy buffer navigation
+noremap <C-h> <C-w>h
+noremap <C-j> <C-w>j
+noremap <C-k> <C-w>k
+noremap <C-l> <C-w>l
+
+" because I type too fast
+cmap WQ wq
+cmap Wq wq
+cmap W w
+cmap Q q
+
+
+
+
+"====[ Misc functions ]=============================================
+" Cursorline {{{
+" Only show cursorline in the current window and in normal mode.
+augroup cline
+  au!
+  au WinLeave,InsertEnter * set nocursorline
+  au WinEnter,InsertLeave * set cursorline
+augroup END
+
+
+
+""====[ Misc functions ]=============================================
+"" MULTIPURPOSE TAB KEY
+"" Indent if we're at the beginning of a line. Else, do completion.
+"function! InsertTabWrapper()
+"    let col = col('.') - 1
+"    if !col || getline('.')[col - 1] !~ '\k'
+"        return "\<tab>"
+"    else:
+"        return "\<c-p>"
+"    endif
+"endfunction
+"
+"inoremap <tab> <c-r>=InsertTabWrapper()<cr>
+
+
+
+
+"====[ Languagetool   ]=============================================
+
+let g:languagetool_jar='$HOME/localscripts/LanguageTool/languagetool-commandline.jar'
+
+"Set default language to Catalan
+"let g:languagetool_lang='ca'
+
+
+
+
+"====[ Restore cursor to file position in previous editing session ]==
+"http://vim.wikia.com/wiki/Restore_cursor_to_file_position_in_previous_editing_session
+
+function! ResCur()
+  if line("'\"") <= line("$")
+    normal! g`"
+    return 1
+  endif
+endfunction
+
+augroup resCur
+  autocmd!
+  autocmd BufWinEnter * call ResCur()
+augroup END
+
+
+
+"====[ NerdTree ]====================================================
+"autocmd vimenter * NERDTree
+
+
+
+"====[ VimR specific stuff ]========================================
+if has("gui_vimr")
+  autocmd VimEnter * exe "source ~/Dropbox/todo/my_todo_setup.vim"
+endif
+
+
+
+"===[ Time-stamped notes ]=========================================
+let g:time_stamp_enabled = 0
+command! TimeStampToggle let g:time_stamp_enabled = !g:time_stamp_enabled
+
+inoremap <expr> <CR> g:time_stamp_enabled ? "\<ESC>:call TimeStamp()\<CR>a" : "\<CR>"
+
+function! TimeStamp()
+     let l:current_time = strftime("%H:%M:%S")
+     execute "normal! 0i\<SPACE>\<ESC>0dwi\
+          \<C-R>=l:current_time\<CR>\
+          \<SPACE>\<SPACE>—\<SPACE>\<SPACE>\<ESC>o\<SPACE>\<SPACE>\<SPACE>\<SPACE>\
+          \<SPACE>\<SPACE>\<SPACE>\<SPACE>\<SPACE>\<SPACE>\<SPACE>\<SPACE>\<SPACE>"
+
+endfunction
+
+
+
+"====[ Gundo stuff ]========================================
+
+nnoremap <F5> :GundoToggle<CR>
+
+if has('python3')
+      let g:gundo_prefer_python3 = 1
+endif
+
+
+
+"====[ NERD Commenter stuff ]========================================
